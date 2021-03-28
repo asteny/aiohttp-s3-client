@@ -14,7 +14,7 @@ from aiohttp_s3_client import S3Client
 
 @pytest.fixture()
 async def s3_url() -> URL:
-    return URL(os.getenv("S3_URL"))
+    return URL(os.getenv("S3_URL", "http://user:hackme@localhost:8000/"))
 
 
 @pytest.fixture

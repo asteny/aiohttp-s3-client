@@ -45,6 +45,7 @@ setup(
         "develop": [
             "coverage!=4.3",
             "coveralls",
+            "mypy",
             "pylava",
             "pytest",
             "pytest-aiohttp",

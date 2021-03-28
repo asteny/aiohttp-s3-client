@@ -95,12 +95,12 @@ class S3Client:
             content_sha256 = UNSIGNED_PAYLOAD
 
         url = (self._url / path.lstrip('/')).with_query(params)
-        url = str(url.with_path(quote(url.path), encoded=True))
+        url = url.with_path(quote(url.path), encoded=True)
 
         headers = self._make_headers(headers)
         headers.extend(
             self._signer.sign_with_headers(
-                method, url, headers=headers, content_hash=content_sha256
+                method, str(url), headers=headers, content_hash=content_sha256
             )
         )
         return self._session.request(
@@ -117,18 +117,18 @@ class S3Client:
         return self.request("DELETE", object_name, **kwargs)
 
     @staticmethod
-    def _make_headers(headers: t.Optional[LooseHeaders]) -> LooseHeaders:
+    def _make_headers(headers: t.Optional[LooseHeaders]) -> CIMultiDict:
         headers = CIMultiDict(headers or {})
         return headers
 
     def _prepare_headers(
         self, headers: t.Optional[LooseHeaders],
         file_path: str = "",
-    ) -> LooseHeaders:
+    ) -> CIMultiDict:
         headers = self._make_headers(headers)
 
         if hdrs.CONTENT_TYPE not in headers:
-            headers[hdrs.CONTENT_TYPE] = guess_type(file_path)[0]
+            headers[hdrs.CONTENT_TYPE] = str(guess_type(file_path)[0])
 
         if headers[hdrs.CONTENT_TYPE] is None:
             headers[hdrs.CONTENT_TYPE] = "application/octet-stream"
@@ -150,7 +150,7 @@ class S3Client:
 
         headers = self._prepare_headers(headers, str(file_path))
         return self.put(
-            object_name,
+            str(object_name),
             headers=headers,
             data=file_sender(
                 file_path,
