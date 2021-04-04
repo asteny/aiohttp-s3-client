@@ -128,10 +128,11 @@ class S3Client:
         headers = self._make_headers(headers)
 
         if hdrs.CONTENT_TYPE not in headers:
-            headers[hdrs.CONTENT_TYPE] = str(guess_type(file_path)[0])
+            content_type = guess_type(file_path)[0]
+            if content_type is None:
+                content_type = "application/octet-stream"
 
-        if headers[hdrs.CONTENT_TYPE] is None:
-            headers[hdrs.CONTENT_TYPE] = "application/octet-stream"
+            headers[hdrs.CONTENT_TYPE] = content_type
 
         return headers
 
